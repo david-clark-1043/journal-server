@@ -127,7 +127,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         #         response = get_customers_by_email(value)
 
         # This weird code sends a response back to the client
-        self.wfile.write(f"${response}".encode())
+        self.wfile.write(f"{response}".encode())
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
