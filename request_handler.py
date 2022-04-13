@@ -1,7 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from views import get_all_entries
+from views import get_all_entries, get_single_entry
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -38,7 +38,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         """
         path_params = path.split("/")
         resource = path_params[1]
-
+        print (path)
         # Check if there is a query string parameter
         if "?" in resource:
             # GIVEN: /customers?email=jenna@solis.com
@@ -91,28 +91,9 @@ class HandleRequests(BaseHTTPRequestHandler):
             ( resource, id ) = parsed
             if resource == "entries":
                 if id is not None:
-                    pass
-                    #response = f"{get_single_entry(id)}"
+                    response = f"{get_single_entry(id)}"
                 else:
                     response = f"{get_all_entries()}"
-
-        #     elif resource == "locations":
-        #         if id is not None:
-        #             response = f"{get_single_location(id)}"
-        #         else:
-        #             response = f"{get_all_locations()}"
-
-        #     elif resource == "employees":
-        #         if id is not None:
-        #             response = f"{get_single_employee(id)}"
-        #         else:
-        #             response = f"{get_all_employees()}"
-
-        #     elif resource == "customers":
-        #         if id is not None:
-        #             response = f"{get_single_customer(id)}"
-        #         else:
-        #             response = f"{get_all_customers()}"
 
         # # Response from parse_url() is a tuple with 3
         # # items in it, which means the request was for

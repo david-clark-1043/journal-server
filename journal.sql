@@ -43,3 +43,16 @@ INSERT INTO `EntryTags` VALUES (null, 2, 4);
 
 SELECT * FROM EntryTags;
 
+-- DROP TABLE if exists `TestData`;
+
+-- CREATE TABLE `TestData` (
+--     `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+-- );
+-- CREATE TABLE `TestData2` (
+--     `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+--     `first_id` INTEGER,
+--     FOREIGN KEY(`first_id`) REFERENCES `TestData`(`id`)
+-- );
+
+-- CREATE TABLE `TestData2` ();
+
