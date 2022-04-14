@@ -1,7 +1,10 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from views import get_all_entries, get_single_entry
+from views import get_all_entries, get_single_entry, delete_entry
+from views import get_entries_by_text
+from views import get_all_moods
+from views import create_journal_entry, update_entry
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -94,18 +97,24 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_entry(id)}"
                 else:
                     response = f"{get_all_entries()}"
+            if resource == "moods":
+                if id is not None:
+                    pass
+                    #response = f"{get_single_entry(id)}"
+                else:
+                    response = f"{get_all_moods()}"
 
         # # Response from parse_url() is a tuple with 3
         # # items in it, which means the request was for
         # # `/resource?parameter=value`
-        # elif len(parsed) == 3:
-        #     ( resource, key, value ) = parsed
+        elif len(parsed) == 3:
+            ( resource, key, value ) = parsed
 
-        #     # Is the resource `customers` and was there a
-        #     # query parameter that specified the customer
-        #     # email as a filtering value?
-        #     if key == "email" and resource == "customers":
-        #         response = get_customers_by_email(value)
+            # Is the resource `customers` and was there a
+            # query parameter that specified the customer
+            # email as a filtering value?
+            if key == "q" and resource == "entries":
+                response = get_entries_by_text(value)
 
         # This weird code sends a response back to the client
         self.wfile.write(f"{response}".encode())
@@ -131,8 +140,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Add a new animal to the list. Don't worry about
         # the orange squiggle, you'll define the create_animal
         # function next.
-        # if resource == "animals":
-        #     new_object = create_animal(post_body)
+        if resource == "entries":
+            new_object = create_journal_entry(post_body)
         # if resource == "locations":
         #     new_object = create_location(post_body)
         # if resource == "employees":
@@ -158,8 +167,8 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         success = False
 
-        # if resource == "animals":
-        #     success = update_animal(id, post_body)
+        if resource == "entries":
+            success = update_entry(id, post_body)
         # rest of the elif's
 
         if success:
@@ -180,8 +189,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         (resource, id) = self.parse_url(self.path)
 
         # Delete a single animal from the list
-        # if resource == "animals":
-        #     delete_animal(id)
+        if resource == "entries":
+            delete_entry(id)
         # if resource == "locations":
         #     delete_location(id)
         # if resource == "employees":

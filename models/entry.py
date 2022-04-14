@@ -3,6 +3,6 @@ class Entry():
         self.id = id
         self.concept = concept
         self.entry = entry
-        self.mood_id = mood_id
+        self.moodId = mood_id
         self.date = date
         self.mood = None
