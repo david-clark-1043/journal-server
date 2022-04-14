@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from views import get_all_entries, get_single_entry, delete_entry
 from views import get_entries_by_text
-from views import get_all_moods
+from views import get_all_moods, get_all_tags
 from views import create_journal_entry, update_entry
 
 # Here's a class. It inherits from another class.
@@ -103,6 +103,12 @@ class HandleRequests(BaseHTTPRequestHandler):
                     #response = f"{get_single_entry(id)}"
                 else:
                     response = f"{get_all_moods()}"
+            if resource == "tags":
+                if id is not None:
+                    pass
+                    #response = f"{get_single_entry(id)}"
+                else:
+                    response = f"{get_all_tags()}"
 
         # # Response from parse_url() is a tuple with 3
         # # items in it, which means the request was for

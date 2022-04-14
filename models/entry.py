@@ -6,3 +6,4 @@ class Entry():
         self.moodId = mood_id
         self.date = date
         self.mood = None
+        self.tags = None

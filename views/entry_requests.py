@@ -25,12 +25,26 @@ def get_all_entries():
         JOIN Moods m
             ON e.mood_id = m.id
         """)
+        
 
         # Initialize an empty list to hold all entry representations
         entries = []
 
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
+
+        db_cursor.execute("""
+        SELECT
+            et.id,
+            et.entry_id,
+            et.tag_id,
+            t.label tag_label              
+        FROM EntryTags et
+        JOIN Tags t
+            ON et.tag_id = t.id
+        """)
+        
+        entry_tags = db_cursor.fetchall()
 
         # Iterate list of data returned from database
         for row in dataset:
@@ -45,6 +59,13 @@ def get_all_entries():
             # Add the dictionary representation of the location to the entry
             entry.mood = mood.__dict__
 
+            tags = []
+            for et_row in entry_tags:
+                if et_row["entry_id"] == row["id"]:
+                    tags.append(et_row["tag_id"])
+
+            entry.tags = tags
+            
             # Add the dictionary representation of the entry to the list
             entries.append(entry.__dict__)
 
@@ -174,11 +195,19 @@ def create_journal_entry(new_entry):
         """, (new_entry['concept'], new_entry['entry'],
               new_entry['moodId'], new_entry['date'], ))
 
+        
         # The `lastrowid` property on the cursor will return
         # the primary key of the last thing that got added to
         # the database.
         id = db_cursor.lastrowid
 
+        for i, entry_tag in enumerate(new_entry["tags"]):
+            db_cursor.execute("""
+                INSERT INTO EntryTags
+                    ( entry_id, tag_id )
+                VALUES
+                    ( ?, ? );
+                """, (id, entry_tag ))
         # Add the `id` property to the entry dictionary that
         # was sent by the client so that the client sees the
         # primary key in the response.

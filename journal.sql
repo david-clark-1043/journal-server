@@ -56,3 +56,29 @@ SELECT * FROM EntryTags;
 
 -- CREATE TABLE `TestData2` ();
 
+        SELECT 
+            e.id,
+            e.concept,
+            e.entry,
+            e.mood_id,
+            e.date,
+            m.label mood_label,
+            et.entry_id,
+            et.tag_id,
+            t.label tag_label
+        FROM Entries e
+        JOIN Moods m
+            ON e.mood_id = m.id
+        JOIN EntryTags et
+            ON e.id = et.entry_id
+        JOIN Tags t
+            ON et.tag_id = t.id
+
+        SELECT
+            et.id,
+            et.entry_id,
+            et.tag_id,
+            t.label tag_label              
+        FROM EntryTags et
+        JOIN Tags t
+            ON et.tag_id = t.id
