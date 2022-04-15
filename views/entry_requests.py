@@ -104,9 +104,29 @@ def get_single_entry(id):
         # Load the single result into memory
         data = db_cursor.fetchone()
 
+        db_cursor.execute("""
+        SELECT
+            et.id,
+            et.entry_id,
+            et.tag_id,
+            t.label tag_label              
+        FROM EntryTags et
+        JOIN Tags t
+            ON et.tag_id = t.id
+        """)
+        
+        entry_tags = db_cursor.fetchall()
+
         # Create an entry instance from the current row
         entry = Entry(data['id'], data['concept'], data['entry'],
                             data['mood_id'], data['date'])
+        
+        tags = []
+        for et_row in entry_tags:
+            if et_row["entry_id"] == data["id"]:
+                tags.append(et_row["tag_id"])
+
+        entry.tags = tags
         
         # Create a Location instance from the current row
         mood = Mood(data['mood_id'], data['mood_label'])
@@ -157,6 +177,19 @@ def get_entries_by_text(text):
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
 
+        db_cursor.execute("""
+        SELECT
+            et.id,
+            et.entry_id,
+            et.tag_id,
+            t.label tag_label              
+        FROM EntryTags et
+        JOIN Tags t
+            ON et.tag_id = t.id
+        """)
+        
+        entry_tags = db_cursor.fetchall()
+
         # Iterate list of data returned from database
         for row in dataset:
 
@@ -164,8 +197,15 @@ def get_entries_by_text(text):
             entry = Entry(row['id'], row['concept'], row['entry'], row['mood_id'],
                             row['date'])
 
+            tags = []
+            for et_row in entry_tags:
+                if et_row["entry_id"] == row["id"]:
+                    tags.append(et_row["tag_id"])
+
+            entry.tags = tags
+
             # Create a Location instance from the current row
-            mood = Mood(row['id'], row['mood_label'])
+            mood = Mood(row['mood_id'], row['mood_label'])
 
             # Add the dictionary representation of the location to the entry
             entry.mood = mood.__dict__
@@ -186,7 +226,7 @@ def create_journal_entry(new_entry):
     """
     with sqlite3.connect("./journal.sqlite3") as conn:
         db_cursor = conn.cursor()
-
+        # creates the entry in entries table
         db_cursor.execute("""
         INSERT INTO entries
             ( concept, entry, mood_id, date )
@@ -195,10 +235,7 @@ def create_journal_entry(new_entry):
         """, (new_entry['concept'], new_entry['entry'],
               new_entry['moodId'], new_entry['date'], ))
 
-        
-        # The `lastrowid` property on the cursor will return
-        # the primary key of the last thing that got added to
-        # the database.
+        # get id of the new entry
         id = db_cursor.lastrowid
 
         for i, entry_tag in enumerate(new_entry["tags"]):
@@ -242,9 +279,32 @@ def update_entry(id, new_entry):
         # Did the client send an `id` that exists?
         rows_affected = db_cursor.rowcount
 
-    if rows_affected == 0:
-        # Forces 404 response by main module
-        return False
-    else:
-        # Forces 204 response by main module
-        return True
+
+        if rows_affected == 0:
+            # Forces 404 response by main module
+            return False
+        else:
+            db_cursor.execute("""
+            SELECT
+                et.id,
+                et.entry_id,
+                et.tag_id,
+                t.label tag_label              
+            FROM EntryTags et
+            JOIN Tags t
+                ON et.tag_id = t.id
+            """)
+            
+            entry_tags = db_cursor.fetchall()
+            
+            for i, entry_tag in enumerate(new_entry["tags"]):
+                found = False
+                for row in entry_tags:
+                    # row has et.id, et.entry_id, et.tag_id, tag_label columns
+                    # want to update the entryTag rows where entry_id = new_entry
+                    if row["entry_id"] == id:
+                        if row["tag_id"] == entry_tag:
+                            found = True
+
+            # Forces 204 response by main module
+            return True
