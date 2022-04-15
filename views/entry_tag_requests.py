@@ -103,16 +103,7 @@ def update_tags_for_entry(new_entry):
         # get all entry_tags for this entry_id
         entry_tags = get_all_entry_tags_for_entry(new_entry["id"])
         entry_tags = json.loads(entry_tags)
-        # """
-        #     new_entry.tags = [1, 2, 3]
-        #     entry_tags = [1, 4]
-        # """
         # # need to
-        # """
-        #     new_entry.tags = [tagId1, tagId2]
-        #     each entry_tag in entry_tags
-        #         id, entry_id, tag_id // where entry_id = new_entry.id
-        # """
         # - remove entry_tags that are no longer correct
         # '''
         #     iterate over new_entry.tags
