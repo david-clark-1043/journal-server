@@ -5,7 +5,7 @@ from models import Entry
 from models import Mood
 
 def get_all_entries():
-    
+
     with sqlite3.connect("./journal.sqlite3") as conn:
 
         # Just use these. It's a Black Box.
@@ -25,7 +25,7 @@ def get_all_entries():
         JOIN Moods m
             ON e.mood_id = m.id
         """)
-        
+
 
         # Initialize an empty list to hold all entry representations
         entries = []
@@ -43,7 +43,7 @@ def get_all_entries():
         JOIN Tags t
             ON et.tag_id = t.id
         """)
-        
+
         entry_tags = db_cursor.fetchall()
 
         # Iterate list of data returned from database
@@ -65,7 +65,7 @@ def get_all_entries():
                     tags.append(et_row["tag_id"])
 
             entry.tags = tags
-            
+
             # Add the dictionary representation of the entry to the list
             entries.append(entry.__dict__)
 
@@ -114,20 +114,20 @@ def get_single_entry(id):
         JOIN Tags t
             ON et.tag_id = t.id
         """)
-        
+
         entry_tags = db_cursor.fetchall()
 
         # Create an entry instance from the current row
         entry = Entry(data['id'], data['concept'], data['entry'],
                             data['mood_id'], data['date'])
-        
+
         tags = []
         for et_row in entry_tags:
             if et_row["entry_id"] == data["id"]:
                 tags.append(et_row["tag_id"])
 
         entry.tags = tags
-        
+
         # Create a Location instance from the current row
         mood = Mood(data['mood_id'], data['mood_label'])
 
@@ -187,7 +187,7 @@ def get_entries_by_text(text):
         JOIN Tags t
             ON et.tag_id = t.id
         """)
-        
+
         entry_tags = db_cursor.fetchall()
 
         # Iterate list of data returned from database
@@ -284,27 +284,5 @@ def update_entry(id, new_entry):
             # Forces 404 response by main module
             return False
         else:
-            db_cursor.execute("""
-            SELECT
-                et.id,
-                et.entry_id,
-                et.tag_id,
-                t.label tag_label              
-            FROM EntryTags et
-            JOIN Tags t
-                ON et.tag_id = t.id
-            """)
-            
-            entry_tags = db_cursor.fetchall()
-            
-            for i, entry_tag in enumerate(new_entry["tags"]):
-                found = False
-                for row in entry_tags:
-                    # row has et.id, et.entry_id, et.tag_id, tag_label columns
-                    # want to update the entryTag rows where entry_id = new_entry
-                    if row["entry_id"] == id:
-                        if row["tag_id"] == entry_tag:
-                            found = True
-
             # Forces 204 response by main module
             return True

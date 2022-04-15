@@ -5,6 +5,8 @@ from views import get_all_entries, get_single_entry, delete_entry
 from views import get_entries_by_text
 from views import get_all_moods, get_all_tags
 from views import create_journal_entry, update_entry
+from views import update_tags_for_entry
+from views.entry_tag_requests import delete_entry_tag
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -178,6 +180,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         # rest of the elif's
 
         if success:
+            update_tags_for_entry(post_body)
             self._set_headers(204)
         else:
             self._set_headers(404)
@@ -197,6 +200,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Delete a single animal from the list
         if resource == "entries":
             delete_entry(id)
+            delete_entry_tag("",id)
         # if resource == "locations":
         #     delete_location(id)
         # if resource == "employees":
